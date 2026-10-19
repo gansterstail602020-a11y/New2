@@ -1,0 +1,36 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract source
+        run: |
+          unzip -q love-spouse-alarm-source.zip -d source
+          find source -type f -name gradlew -exec dirname {} \; > project-dir.txt
+          test -s project-dir.txt
+          sed -i 's|^|PROJECT_DIR=|' project-dir.txt
+          cat project-dir.txt >> "$GITHUB_ENV"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Build APK
+        run: |
+          cd "$PROJECT_DIR"
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: love-spouse-alarm-apk
+          path: source/**/build/outputs/apk/debug/*.apk
