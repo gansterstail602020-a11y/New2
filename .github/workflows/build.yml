@@ -11,7 +11,7 @@ jobs:
 
       - name: Extract source
         run: |
-          unzip -q love-spouse-alarm-source.zip -d source
+          unzip -q love-spouse-alarm-source-fixed.zip -d source
           find source -type f -name gradlew -exec dirname {} \; > project-dir.txt
           test -s project-dir.txt
           sed -i 's|^|PROJECT_DIR=|' project-dir.txt
